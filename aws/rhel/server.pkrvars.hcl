@@ -5,6 +5,32 @@ data_dir   = "{{ nomad_data_dir }}"
 
 bind_addr = "0.0.0.0"
 
+ui {
+  enabled = true
+}
+
+acl {
+  enabled = false
+}
+
+if {{ nomad_enterprise }} {
+  audit {
+    enabled            = true
+
+    sink "audit" {
+    type               = "file"
+    delivery_guarantee = "enforced"
+    format             = "json"
+    path               = "{{ nomad_audit_log_dir }}/audit.log"
+    rotate_bytes       = 1000000000  # 1 GB 
+    rotate_duration    = "24h"
+    rotate_max_files   = 10
+    mode               = "0600"
+  }
+
+}}
+
+
 advertise {
   http = "{{ ansible_default_ipv4.address }}"
   rpc  = "{{ ansible_default_ipv4.address }}"
@@ -19,7 +45,7 @@ server {
   # encrypt = "your-key-here"
   
   server_join {
-    retry_join = ["provider={{ cloud_provider }} tag_key=nomad_cluster tag_value={{ nomad_datacenter }}"]
+    retry_join = ["provider={{ nomad_cloud_provider }} tag_key=nomad_cluster tag_value={{ nomad_datacenter }}"]
   }
 }
 
@@ -31,19 +57,3 @@ telemetry {
   publish_node_metrics       = true
 }
 
-ui {
-  enabled = true
-}
-
-acl {
-  enabled = false
-}
-
-plugin "docker" {
-  config {
-    allow_privileged = true
-    volumes {
-      enabled = true
-    }
-  }
-}

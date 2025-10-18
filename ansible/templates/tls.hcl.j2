@@ -1,0 +1,13 @@
+// Nomad TLS Configuration
+// Docs : https://developer.hashicorp.com/nomad/docs/configuration/tls
+
+tls {
+  http      = true
+  rpc       = true
+  cert_file = "$NOMAD_DIR_TLS/cert.pem"
+  key_file  = "$NOMAD_DIR_TLS/key.pem"
+  ca_file   = "$NOMAD_DIR_TLS/bundle.pem"
+
+  verify_server_hostname = true
+  verify_https_client    = false
+}

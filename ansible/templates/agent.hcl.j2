@@ -1,0 +1,17 @@
+// Nomad General Agent Configuration
+// Docs : https://developer.hashicorp.com/nomad/docs/configuration
+
+// https://developer.hashicorp.com/nomad/docs/glossary#datacenters
+datacenter = "{{ nomad_datacenter }}"
+
+// https://developer.hashicorp.com/nomad/docs/glossary#regions
+region     = "{{ nomad_region }}"
+
+// https://developer.hashicorp.com/nomad/docs/configuration#data_dir
+data_dir   = "{{ nomad_data_dir }}"
+
+// https://developer.hashicorp.com/nomad/docs/configuration#bind_addr
+// This binds Nomad to all network interfaces, which you may want to adjust based on your network setup.
+bind_addr = "0.0.0.0"
+
+

@@ -1,0 +1,14 @@
+// Nomad Server Configuration
+// Docs : https://developer.hashicorp.com/nomad/docs/configuration/server
+server {
+  enabled          = true
+  bootstrap_expect = {{ nomad_bootstrap_expect }}
+  
+  # Encryption key should be configured via additional config file at runtime
+  # encrypt = "your-key-here"
+  
+  server_join {
+    retry_join = ["provider={{ nomad_cloud_provider }} tag_key=nomad_cluster tag_value={{ nomad_datacenter }}"]
+  }
+}
+

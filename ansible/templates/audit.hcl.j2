@@ -1,0 +1,18 @@
+// Nomad Audit Configuration (Enterprise Only)
+// Docs : https://developer.hashicorp.com/nomad/docs/configuration/audit
+
+if {{ nomad_enterprise }} {
+audit {
+  enabled            = true
+
+  sink "audit" {
+  type               = "file"
+  delivery_guarantee = "enforced"
+  format             = "json"
+  path               = "{{ nomad_audit_log_dir }}/audit.log"
+  rotate_bytes       = 1000000000  # 1 GB 
+  rotate_duration    = "24h"
+  rotate_max_files   = 10
+  mode               = "0600"
+  }
+}}

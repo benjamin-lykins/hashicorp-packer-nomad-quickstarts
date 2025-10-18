@@ -3,29 +3,48 @@
   hosts: all
   become: true
   vars:
+    # Nomad Binary Variables
+    ## Specify the Nomad version to install
     nomad_version: "1.10.5"
-    nomad_enterprise: false
-    cloud_provider: "aws"
-    # Directories
+    ## Set to true if installing Nomad Enterprise, false for Community Edition
+    nomad_enterprise: true
     ## This is where the Nomad binary will be installed
     nomad_install_dir: "/usr/local/bin"
+
+    # Vault Agent Binary Variables
+    ## Specify the Vault version to install (optional, useful for TLS certs)
+    vault_version: "1.20.4"
+    ## This is where the Vault binary will be installed
+    vault_install_dir: "/usr/local/bin"
+
+    # Directories 
     ## This is where the Nomad configuration files will be stored
     nomad_config_dir: "/etc/nomad.d"
     ## This is where Nomad will store its data
     nomad_data_dir: "/opt/nomad"
-    ## This is whee tls certificates will be stored
+    ## This is where tls certificates will be stored
     nomad_tls_dir: "/etc/nomad.d/tls"
     ## If using Nomad Enterprise, this is where the license file will be stored
-    nomad_license_dir: "/etc/nomad.d/license"
+    nomad_license_dir: "{{ nomad_config_dir }}/license"
+    ## This is where Nomad will store its logs
+    nomad_log_dir: "/var/log/nomad"
+    ## This is where Audit logs will be stored (Enterprise only)
+    nomad_audit_log_dir: "{{ nomad_log_dir }}/audit"
 
-
+    # Nomad User and Group
+    # Nomad servers should run under their own user and group for security
     nomad_user: "nomad"
     nomad_group: "nomad"
+
+    # Nomad Configuration Variables
+    ## Nomad datacenter
     nomad_datacenter: "dc1"
+    ## Nomad region 
     nomad_region: "global"
-    nomad_node_role: "server"
-    nomad_bootstrap_expect: 3
-    # Encryption key removed - will be set at runtime via Nomad config files
+    ## Number of servers to expect in the cluster for bootstrapping - Recommended to be an odd number and at least 3 for production. 
+    nomad_bootstrap_expect: 1
+    ## This value is used for cloud auto-joining Nomad servers
+    nomad_cloud_provider: "aws"  # Change this value based on your cloud provider (e.g., aws, gcp, azure, etc.)
 
   tasks:
    
@@ -39,8 +58,6 @@
           - curl
         state: present
       when: ansible_os_family == "RedHat"
-
-
 
     # Create Nomad User and Group - if not existant
     # For security reasons, Nomad servers should run under its own user and group
@@ -72,20 +89,88 @@
         - "{{ nomad_data_dir }}"
         - "{{ nomad_tls_dir }}"
         - "{{ nomad_license_dir }}"
-      
+        - "{{ nomad_log_dir }}"
+        - "{{ nomad_audit_log_dir }}"
+
+
+    # Check if Nomad is already installed
+    - name: Check if Nomad is already installed
+      stat:
+        path: "{{ nomad_install_dir }}/nomad"
+      register: nomad_stat
+
+
     # Download Nomad CE Binary
     - name: Download Nomad binary
       get_url:
         url: "https://releases.hashicorp.com/nomad/{{ nomad_version }}/nomad_{{ nomad_version }}_linux_amd64.zip"
         dest: "/tmp/nomad.zip"
         mode: '0755'
-      when: nomad_enterprise == false
+      when: nomad_enterprise == false and not nomad_stat.stat.exists
 
     # Download Nomad Enterprise Binary
     # Note: This requires an active Nomad Enterprise license
     - name: Download Nomad Enterprise binary
       get_url:
-        url: "https://releases.hashicorp.com/nomad/{{ nomad_version }}/nomad-enterprise_{{ nomad_version }}_linux_amd64.zip"
+        url: "https://releases.hashicorp.com/nomad/{{ nomad_version }}+ent/nomad_{{ nomad_version }}+ent_linux_amd64.zip"
         dest: "/tmp/nomad.zip"
         mode: '0755'
-      when: nomad_enterprise == true
+      when: nomad_enterprise == true and not nomad_stat.stat.exists
+
+    # Unzip Nomad Binary
+    - name: Unzip Nomad binary
+      unarchive:
+        src: "/tmp/nomad.zip"
+        dest: "{{ nomad_install_dir }}"
+        remote_src: yes
+      when: not nomad_stat.stat.exists
+
+    # Check if Vault is already installed
+    - name: Check if Vault is already installed
+      stat:
+        path: "/usr/local/bin/vault"
+      register: vault_stat
+
+    # Download Vault Binary
+    ## Note: This is optional, but useful if you plan to use Vault PKI for TLS certificates
+    - name: Download Vault binary
+      get_url: 
+        url: "https://releases.hashicorp.com/vault/{{ vault_version }}/vault_{{ vault_version }}_linux_amd64.zip"
+        dest: "/tmp/vault.zip"
+        mode: '0755'
+      when: not vault_stat.stat.exists
+
+    # Unzip Vault Binary
+    - name: Unzip Vault binary
+      unarchive:
+        src: "/tmp/vault.zip"
+        dest: "{{ vault_install_dir }}"
+        remote_src: yes
+      when: not vault_stat.stat.exists
+
+    # Create Nomad Server Configuration File
+    - name: Create Nomad server configuration file
+      template:
+        src: "{{ item }}"
+        dest: "{{ nomad_config_dir }}/{{ item | basename }}"    
+        owner: "{{ nomad_user }}"
+        group: "{{ nomad_group }}"
+        mode: '0644'
+      loop:
+        - templates/acl.hcl.j2
+        - templates/agent.hcl.j2
+        - templates/audit.hcl.j2
+        - templates/server.hcl.j2
+        - templates/telemetry.hcl.j2
+        - templates/tls.hcl.j2
+
+    # Nomad License File (Enterprise Only)
+    ## Note: This is required for Nomad Enterprise installations
+    ## Adding to both CE and Enterprise playbooks for since it won't hurt. 
+    - name: Create Nomad license file
+      template:
+        src: "templates/license.hclic.j2"
+        dest: "{{ nomad_license_dir }}/nomad.hclic"
+        owner: "{{ nomad_user }}"
+        group: "{{ nomad_group }}"
+        mode: '0644'
