@@ -1,0 +1,91 @@
+---
+- name: Install and Configure HashiCorp Nomad Server
+  hosts: all
+  become: true
+  vars:
+    nomad_version: "1.10.5"
+    nomad_enterprise: false
+    cloud_provider: "aws"
+    # Directories
+    ## This is where the Nomad binary will be installed
+    nomad_install_dir: "/usr/local/bin"
+    ## This is where the Nomad configuration files will be stored
+    nomad_config_dir: "/etc/nomad.d"
+    ## This is where Nomad will store its data
+    nomad_data_dir: "/opt/nomad"
+    ## This is whee tls certificates will be stored
+    nomad_tls_dir: "/etc/nomad.d/tls"
+    ## If using Nomad Enterprise, this is where the license file will be stored
+    nomad_license_dir: "/etc/nomad.d/license"
+
+
+    nomad_user: "nomad"
+    nomad_group: "nomad"
+    nomad_datacenter: "dc1"
+    nomad_region: "global"
+    nomad_node_role: "server"
+    nomad_bootstrap_expect: 3
+    # Encryption key removed - will be set at runtime via Nomad config files
+
+  tasks:
+   
+   # Install Prerequisites 
+   # Unzip is needed to extract Nomad binary
+   # Curl is needed to download Nomad binary
+    - name: Install unzip and curl
+      yum:
+        name:
+          - unzip
+          - curl
+        state: present
+      when: ansible_os_family == "RedHat"
+
+
+
+    # Create Nomad User and Group - if not existant
+    # For security reasons, Nomad servers should run under its own user and group
+    - name: Create nomad group
+      group:
+        name: "{{ nomad_group }}"
+        state: present
+    
+    - name : Create nomad User
+      user:
+        name: "{{ nomad_user }}"
+        group: "{{ nomad_group }}"
+        system: yes
+        create_home: no
+        shell: "{{ nomad_config_dir }}"
+        state: present
+
+    # Create necessary directories
+    # For permission and ownership, these directories should be owned by the nomad user and group. 
+    - name: Create Nomad directories
+      file:
+        path: "{{ item }}"
+        state: directory
+        owner: "{{ nomad_user }}"
+        group: "{{ nomad_group }}"
+        mode: '0755'
+      loop:
+        - "{{ nomad_config_dir }}"
+        - "{{ nomad_data_dir }}"
+        - "{{ nomad_tls_dir }}"
+        - "{{ nomad_license_dir }}"
+      
+    # Download Nomad CE Binary
+    - name: Download Nomad binary
+      get_url:
+        url: "https://releases.hashicorp.com/nomad/{{ nomad_version }}/nomad_{{ nomad_version }}_linux_amd64.zip"
+        dest: "/tmp/nomad.zip"
+        mode: '0755'
+      when: nomad_enterprise == false
+
+    # Download Nomad Enterprise Binary
+    # Note: This requires an active Nomad Enterprise license
+    - name: Download Nomad Enterprise binary
+      get_url:
+        url: "https://releases.hashicorp.com/nomad/{{ nomad_version }}/nomad-enterprise_{{ nomad_version }}_linux_amd64.zip"
+        dest: "/tmp/nomad.zip"
+        mode: '0755'
+      when: nomad_enterprise == true
