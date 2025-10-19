@@ -1,0 +1,12 @@
+
+autopilot {
+  cleanup_dead_servers      = true
+  last_contact_threshold    = "200ms"
+  max_trailing_logs         = 250
+  server_stabilization_time = "10s"
+if {{ nomad_enterprise }} {
+  enable_redundancy_zones   = true // Enterprise only: Controls whether Autopilot separates servers into zones for redundancy
+  disable_upgrade_migration = false // Enterprise only: Disables Autopilot's upgrade migration strategy in Nomad Enterprise of waiting until enough newer-versioned servers have been added to the cluster before promoting any of them to voters
+  enable_custom_upgrades    = false // Enterprise only: Specifies whether to enable using custom upgrade versions when performing migrations
+}
+}
