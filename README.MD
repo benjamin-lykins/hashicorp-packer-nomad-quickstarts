@@ -1,5 +1,37 @@
 # Spooky Project Incoming
 
+_Just to note: repository name is temporary and subject to change._
+
+This is still heavily WIP, but the goal of this repository is to provide a collection of Packer templates, Ansible playbooks, and related resources to streamline the creation and management of secure, production-ready images and infrastructure components.
+
+The focus of this project is to be a quickstart to accelrate your building of Nomad Packer-Built images across multiple cloud providers.
+
+I rather fit the needs of many users than try to make this a one-size-fits-all solution or a highly opinionated project - although there are certainly opinions baked in here.
+
+## Cloud Providers Supported
+
+Each of these have their own Packer templates. 
+
+- AWS
+- GCP
+- Azure
+- IBM Cloud
+
+## Nomad Agent Types Supported
+Each of these inside the Cloud Providers have their own Packer templates.
+
+- Nomad Server
+- Nomad Client
+
+## Nomad Support
+- Built with Nomad 1.10.x
+- Nomad CE
+- Nomad Enterprise
+
+
+
+
+
                                Jgy__                        
                             jWW  `""9Wf
                           _#WWW     IW
