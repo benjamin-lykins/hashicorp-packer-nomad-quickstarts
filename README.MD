@@ -24,19 +24,19 @@ Using a shared set of Ansible playbooks to configure the Nomad agents after Pack
 - Nomad Client Configuration (nomad-client.yml)
 - Nomad Server Configuration (nomad-server.yml)
 
-## Nomad Agent Types Supported
-Each of these inside the Cloud Providers have their own Packer templates.
-
-- Nomad Server
-- Nomad Client
-
-## Nomad Support
-- Built with Nomad 1.10.x
+## Nomad Version Support
+- Versioning: Built with Nomad 1.10.x
 - Nomad CE
 - Nomad Enterprise
 
+## Nomad Task Drivers Supported
+- Podman
 
 
+## Vault Integration
+- Staged if using Vault for secrets management and TLS certificates
+
+## Spooky Ascii Art
 
 
                                Jgy__                        
@@ -63,5 +63,5 @@ Each of these inside the Cloud Providers have their own Packer templates.
        ^WQy `C.     `C.        I        .D'    _.D' yW"
          ^9Qy_`C.    `C.       I       .D'   _.D jgW"
             `9WQgC.__ `C.      I      .D'  _.Dp@@"`
-           ilmk `""9WQQggyyyyyygyyyyyQggQWQH""
+               `""9WQQggyyyyyygyyyyyQggQWQH""
 

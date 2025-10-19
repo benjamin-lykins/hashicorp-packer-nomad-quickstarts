@@ -1,5 +1,5 @@
 ---
-- name: Install and Configure HashiCorp Nomad Server
+- name: Install and Configure HashiCorp Nomad Client
   hosts: all
   become: true
   vars:
@@ -7,7 +7,9 @@
     ## Specify the Nomad version to install
     nomad_version: "1.10.5"
     ## Set to true if installing Nomad Enterprise, false for Community Edition
-    nomad_enterprise: true
+    nomad_enterprise: false
+    ## Nomad Enterprise license content from environment variable
+    nomad_enterprise_license: "{{ lookup('env', 'NOMAD_ENTERPRISE_LICENSE') }}"
     ## This is where the Nomad binary will be installed
     nomad_install_dir: "/usr/local/bin"
 
@@ -23,7 +25,7 @@
     ## This is where Nomad will store its data
     nomad_data_dir: "/opt/nomad"
     ## This is where tls certificates will be stored
-    nomad_tls_dir: "/etc/nomad.d/tls"
+    nomad_tls_dir: "{{ nomad_data_dir }}/tls"
     ## If using Nomad Enterprise, this is where the license file will be stored
     nomad_license_dir: "{{ nomad_config_dir }}/license"
     ## This is where Nomad will store its logs
@@ -32,10 +34,9 @@
     nomad_audit_log_dir: "{{ nomad_log_dir }}/audit"
 
     # Nomad User and Group
-    ## Nomad clients typically run as root to allow for privileged operations
-    ## It is possible to run Nomad clients under a different user, but root is the common practice
-    nomad_user: "root"
-    nomad_group: "root"
+    # Nomad servers should run under their own user and group for security
+    nomad_user: "nomad"
+    nomad_group: "nomad"
 
     # Nomad Configuration Variables
     ## Nomad datacenter
@@ -84,7 +85,7 @@
         state: directory
         owner: "{{ nomad_user }}"
         group: "{{ nomad_group }}"
-        mode: '0755'
+        mode: '0750'
       loop:
         - "{{ nomad_config_dir }}"
         - "{{ nomad_data_dir }}"
@@ -156,11 +157,29 @@
         dest: "{{ nomad_config_dir }}/{{ item | basename }}"    
         owner: "{{ nomad_user }}"
         group: "{{ nomad_group }}"
-        mode: '0644'
+        mode: '0640'
       loop:
-        - templates/acl.hcl.j2
-        - templates/agent.hcl.j2
-        - templates/audit.hcl.j2
-        - templates/client.hcl.j2
-        - templates/telemetry.hcl.j2
-        - templates/tls.hcl.j2
+        - templates/agent/acl.hcl.j2
+        - templates/agent/agent.hcl.j2
+        - templates/agent/client.hcl.j2
+        - templates/agent/telemetry.hcl.j2
+        - templates/agent/tls.hcl.j2
+
+    # Nomad License File (Enterprise Only)
+    ## Note: This is required for Nomad Enterprise installations
+    ## Adding to both CE and Enterprise playbooks for since it won't hurt and skips a step when provisioning instances
+    - name: Create Nomad license file
+      template:
+        src: "templates/agent/license.hclic.j2"
+        dest: "{{ nomad_license_dir }}/nomad.hclic"
+        owner: "{{ nomad_user }}"
+        group: "{{ nomad_group }}"
+        mode: '0640'
+
+    # Create Nomad Service File
+    - name: Create Nomad service file
+      template:
+        src: "templates/service/nomad.service.j2"
+        dest: "/etc/systemd/system/nomad.service"
+
+    

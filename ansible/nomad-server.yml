@@ -7,7 +7,9 @@
     ## Specify the Nomad version to install
     nomad_version: "1.10.5"
     ## Set to true if installing Nomad Enterprise, false for Community Edition
-    nomad_enterprise: true
+    nomad_enterprise: false
+    ## Nomad Enterprise license content from environment variable
+    nomad_enterprise_license: "{{ lookup('env', 'NOMAD_ENTERPRISE_LICENSE') }}"
     ## This is where the Nomad binary will be installed
     nomad_install_dir: "/usr/local/bin"
 
@@ -157,21 +159,29 @@
         group: "{{ nomad_group }}"
         mode: '0640'
       loop:
-        - templates/acl.hcl.j2
-        - templates/agent.hcl.j2
-        - templates/audit.hcl.j2
-        - templates/autopilot.hcl.j2
-        - templates/server.hcl.j2
-        - templates/telemetry.hcl.j2
-        - templates/tls.hcl.j2
+        - templates/agent/acl.hcl.j2
+        - templates/agent/agent.hcl.j2
+        - templates/agent/audit.hcl.j2
+        - templates/agent/autopilot.hcl.j2
+        - templates/agent/server.hcl.j2
+        - templates/agent/telemetry.hcl.j2
+        - templates/agent/tls.hcl.j2
 
     # Nomad License File (Enterprise Only)
     ## Note: This is required for Nomad Enterprise installations
-    ## Adding to both CE and Enterprise playbooks for since it won't hurt. 
+    ## Adding to both CE and Enterprise playbooks for since it won't hurt and skips a step when provisioning instances
     - name: Create Nomad license file
       template:
-        src: "templates/license.hclic.j2"
+        src: "templates/agent/license.hclic.j2"
         dest: "{{ nomad_license_dir }}/nomad.hclic"
         owner: "{{ nomad_user }}"
         group: "{{ nomad_group }}"
         mode: '0640'
+
+    # Create Nomad Service File
+    - name: Create Nomad service file
+      template:
+        src: "templates/service/nomad.service.j2"
+        dest: "/etc/systemd/system/nomad.service"
+
+    
