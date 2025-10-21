@@ -2,11 +2,9 @@
 
 _Just to note: repository name is temporary and will to change._
 
-This is still heavily WIP, but the goal of this repository is to provide a collection of Packer templates, Ansible playbooks, and related resources to streamline the creation and management of secure, production-ready images and infrastructure components.
+This repository contains quickstart Packer templates and Ansible playbooks to build HashiCorp Nomad images for various cloud providers. 
 
-The focus of this project is to be a quickstart to accelrate your building of Nomad Packer-Built images across multiple cloud providers.
-
-I rather fit the needs of many users than try to make this a one-size-fits-all solution or a highly opinionated project - although there are certainly opinions baked in here.
+This is intended to be a forkable repository to help get you started with building your own Nomad images using Packer and Ansible, tailored to your specific needs and environment.
 
 ## Cloud Providers Supported
 

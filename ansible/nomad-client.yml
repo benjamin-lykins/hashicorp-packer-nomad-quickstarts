@@ -17,7 +17,7 @@
     ## Specify the Vault version to install (optional, useful for TLS certs)
     vault_version: "1.20.4"
     ## This is where the Vault binary will be installed
-    vault_install_dir: "/usr/local/bin"
+    vault_install_dir: "/usr/bin"
 
     # Directories 
     ## This is where the Nomad configuration files will be stored
@@ -32,11 +32,13 @@
     nomad_log_dir: "/var/log/nomad"
     ## This is where Audit logs will be stored (Enterprise only)
     nomad_audit_log_dir: "{{ nomad_log_dir }}/audit"
+    ## This is where the plugin directory will be located
+    nomad_plugin_dir: "{{ nomad_data_dir }}/plugins"
 
     # Nomad User and Group
     # Nomad servers should run under their own user and group for security
-    nomad_user: "nomad"
-    nomad_group: "nomad"
+    nomad_user: "root"
+    nomad_group: "root"
 
     # Nomad Configuration Variables
     ## Nomad datacenter
@@ -59,14 +61,15 @@
           - unzip
           - curl
         state: present
-      when: ansible_os_family == "RedHat"
 
+  
     # Create Nomad User and Group - if not existant
     # For security reasons, Nomad servers should run under its own user and group
     - name: Create nomad group
       group:
         name: "{{ nomad_group }}"
         state: present
+      when: nomad_user != "root"
     
     - name : Create nomad User
       user:
@@ -76,6 +79,7 @@
         create_home: no
         shell: "{{ nomad_config_dir }}"
         state: present
+      when: nomad_user != "root"
 
     # Create necessary directories
     # For permission and ownership, these directories should be owned by the nomad user and group. 
@@ -154,7 +158,7 @@
     - name: Create Nomad server configuration file
       template:
         src: "{{ item }}"
-        dest: "{{ nomad_config_dir }}/{{ item | basename }}"    
+        dest: "{{ nomad_config_dir }}/{{ item | basename | regex_replace('\\.j2$', '') }}" 
         owner: "{{ nomad_user }}"
         group: "{{ nomad_group }}"
         mode: '0640'

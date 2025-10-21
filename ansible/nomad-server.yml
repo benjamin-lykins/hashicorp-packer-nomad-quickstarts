@@ -11,13 +11,13 @@
     ## Nomad Enterprise license content from environment variable
     nomad_enterprise_license: "{{ lookup('env', 'NOMAD_ENTERPRISE_LICENSE') }}"
     ## This is where the Nomad binary will be installed
-    nomad_install_dir: "/usr/local/bin"
+    nomad_install_dir: "/usr/bin"
 
     # Vault Agent Binary Variables
     ## Specify the Vault version to install (optional, useful for TLS certs)
     vault_version: "1.20.4"
     ## This is where the Vault binary will be installed
-    vault_install_dir: "/usr/local/bin"
+    vault_install_dir: "/usr/bin"
 
     # Directories 
     ## This is where the Nomad configuration files will be stored
@@ -32,6 +32,9 @@
     nomad_log_dir: "/var/log/nomad"
     ## This is where Audit logs will be stored (Enterprise only)
     nomad_audit_log_dir: "{{ nomad_log_dir }}/audit"
+    ## This is where the plugin directory will be located
+    nomad_plugin_dir: "{{ nomad_data_dir }}/plugins"
+
 
     # Nomad User and Group
     # Nomad servers should run under their own user and group for security
@@ -93,6 +96,7 @@
         - "{{ nomad_license_dir }}"
         - "{{ nomad_log_dir }}"
         - "{{ nomad_audit_log_dir }}"
+        - "{{ nomad_plugin_dir }}"
 
 
     # Check if Nomad is already installed
@@ -154,7 +158,7 @@
     - name: Create Nomad server configuration file
       template:
         src: "{{ item }}"
-        dest: "{{ nomad_config_dir }}/{{ item | basename }}"    
+        dest: "{{ nomad_config_dir }}/{{ item | basename | regex_replace('\\.j2$', '') }}" 
         owner: "{{ nomad_user }}"
         group: "{{ nomad_group }}"
         mode: '0640'
@@ -169,7 +173,6 @@
 
     # Nomad License File (Enterprise Only)
     ## Note: This is required for Nomad Enterprise installations
-    ## Adding to both CE and Enterprise playbooks for since it won't hurt and skips a step when provisioning instances
     - name: Create Nomad license file
       template:
         src: "templates/agent/license.hclic.j2"
@@ -177,6 +180,7 @@
         owner: "{{ nomad_user }}"
         group: "{{ nomad_group }}"
         mode: '0640'
+      when: nomad_enterprise == true
 
     # Create Nomad Service File
     - name: Create Nomad service file

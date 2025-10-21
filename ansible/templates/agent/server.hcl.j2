@@ -8,12 +8,14 @@ server {
     retry_join = ["provider={{ nomad_cloud_provider }} tag_key=nomad_cluster tag_value={{ nomad_datacenter }}"]
   }
 
-  encrypt = "add-during-cluster-creation"
+  encrypt = "VVW8zQwZmNe3j+BxNJkZUK/ADaDsc2bCklu5KnK/wbQ="
 
-if {{ nomad_enterprise }} {
-  # redundancy_zone = "zone1" // Enterprise only: specify redundancy zones for addtional fault tolerance
-  # license_path    = {{ nomad_license_dir }}/license.hclic // Enterprise only: path to license file
-}
+{% if nomad_enterprise %}
+// Enterprise only: specify redundancy zones for addtional fault tolerance
+  # redundancy_zone = "zone1" 
+// Enterprise only: path to license file
+  # license_path    = {{ nomad_license_dir }}/license.hclic 
+{% endif %}
 
 }
 
