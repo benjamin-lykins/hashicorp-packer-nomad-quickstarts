@@ -35,7 +35,7 @@ Using a shared set of Ansible playbooks to configure the Nomad agents after Pack
 - Staged if using Vault for secrets management and TLS certificates
 
 ## Spooky Ascii Art
-
+```
 
                                Jgy__                        
                             jWW  `""9Wf
@@ -62,4 +62,4 @@ Using a shared set of Ansible playbooks to configure the Nomad agents after Pack
          ^9Qy_`C.    `C.       I       .D'   _.D jgW"
             `9WQgC.__ `C.      I      .D'  _.Dp@@"`
                `""9WQQggyyyyyygyyyyyQggQWQH""
-
+```
