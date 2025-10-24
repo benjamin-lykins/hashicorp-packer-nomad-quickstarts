@@ -32,8 +32,6 @@
     nomad_log_dir: "/var/log/nomad"
     ## This is where Audit logs will be stored (Enterprise only)
     nomad_audit_log_dir: "{{ nomad_log_dir }}/audit"
-    ## This is where the plugin directory will be located
-    nomad_plugin_dir: "{{ nomad_data_dir }}/plugins"
 
 
     # Nomad User and Group

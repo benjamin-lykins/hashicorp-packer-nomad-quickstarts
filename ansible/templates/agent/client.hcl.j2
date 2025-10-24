@@ -1,6 +1,8 @@
 // Nomad Client Configuration
 // Docs : https://developer.hashicorp.com/nomad/docs/configuration/client
 
+plugin_dir = "{{ nomad_plugin_dir }}"
+
 client {
   enabled = true
   servers = ["provider={{ nomad_cloud_provider }} tag_key=nomad_cluster tag_value={{ nomad_datacenter }}"]

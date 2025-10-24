@@ -26,12 +26,8 @@
     nomad_data_dir: "/opt/nomad"
     ## This is where tls certificates will be stored
     nomad_tls_dir: "{{ nomad_data_dir }}/tls"
-    ## If using Nomad Enterprise, this is where the license file will be stored
-    nomad_license_dir: "{{ nomad_config_dir }}/license"
     ## This is where Nomad will store its logs
     nomad_log_dir: "/var/log/nomad"
-    ## This is where Audit logs will be stored (Enterprise only)
-    nomad_audit_log_dir: "{{ nomad_log_dir }}/audit"
     ## This is where the plugin directory will be located
     nomad_plugin_dir: "{{ nomad_data_dir }}/plugins"
 
@@ -49,6 +45,11 @@
     nomad_bootstrap_expect: 1
     ## This value is used for cloud auto-joining Nomad servers
     nomad_cloud_provider: "aws"  # Change this value based on your cloud provider (e.g., aws, gcp, azure, etc.)
+
+    # Nomad Client Plugins
+    ## List of Nomad client plugins to install
+    podman: true
+    docker: false
 
   tasks:
    
@@ -94,9 +95,8 @@
         - "{{ nomad_config_dir }}"
         - "{{ nomad_data_dir }}"
         - "{{ nomad_tls_dir }}"
-        - "{{ nomad_license_dir }}"
         - "{{ nomad_log_dir }}"
-        - "{{ nomad_audit_log_dir }}"
+        - "{{ nomad_plugin_dir }}"
 
 
     # Check if Nomad is already installed
@@ -169,16 +169,28 @@
         - templates/agent/telemetry.hcl.j2
         - templates/agent/tls.hcl.j2
 
-    # Nomad License File (Enterprise Only)
-    ## Note: This is required for Nomad Enterprise installations
-    ## Adding to both CE and Enterprise playbooks for since it won't hurt and skips a step when provisioning instances
-    - name: Create Nomad license file
+    # Nomad Client Plugins
+    - name: Install podman
+      package:
+        name: "podman"
+        state: present
+      when: podman
+
+    - name: Enable podman service
+      systemd:
+        name: "podman"
+        enabled: yes
+        state: started
+      when: podman
+
+    - name: Configure Podman Driver
       template:
-        src: "templates/agent/license.hclic.j2"
-        dest: "{{ nomad_license_dir }}/nomad.hclic"
+        src: "templates/task_drivers/podman.hcl.j2"
+        dest: "{{ nomad_config_dir }}/podman.hcl"
         owner: "{{ nomad_user }}"
         group: "{{ nomad_group }}"
         mode: '0640'
+      when: podman
 
     # Create Nomad Service File
     - name: Create Nomad service file
