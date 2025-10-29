@@ -2,9 +2,15 @@
 
 _Just to note: this registry is heavily a work in progress._
 
-This repository contains quickstart Packer templates and Ansible playbooks to build HashiCorp Nomad images for various cloud providers. 
+This repository contains quickstart Packer templates and Ansible playbooks to build HashiCorp Nomad images on various cloud providers. 
 
-This is intended to be a forkable repository to help get you started with building your own Nomad images using Packer and Ansible, tailored to your specific needs and environment.
+This is intended to be a forkable repository to help get you quick start building your own Nomad images using Packer and Ansible, tailored to your specific needs and environment.
+
+## Prerequisites
+_Note: Versions were what I used at the time building these templates. Newer and versions may work fine._
+
+- Hashicorp Packer (v1.14.x)
+- Ansible (v2.9.x)
 
 ## Cloud Providers Supported
 
@@ -23,13 +29,14 @@ Using a shared set of Ansible playbooks to configure the Nomad agents after Pack
 - Nomad Server Configuration (nomad-server.yml)
 
 ## Nomad Version Support
-- Versioning: Built with Nomad 1.10.x
+_Note: Images I built were using Nomad 1.10.x at the time._
+
 - Nomad CE
 - Nomad Enterprise
 
 ## Nomad Task Drivers Supported
 - Podman
-
+- More to come. 
 
 ## Vault Integration
 - Staged if using Vault for secrets management and TLS certificates
