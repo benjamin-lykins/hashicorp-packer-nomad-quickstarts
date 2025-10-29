@@ -7,7 +7,7 @@ This repository contains quickstart Packer templates and Ansible playbooks to bu
 This is intended to be a forkable repository to help get you quick start building your own Nomad images using Packer and Ansible, tailored to your specific needs and environment.
 
 ## Prerequisites
-_Note: Versions were what I used at the time building these templates. Newer and versions may work fine._
+_Note: Noting versions which I used when I built this. Newer and older versions may work fine._
 
 - Hashicorp Packer (v1.14.x)
 - Ansible (v2.9.x)
