@@ -1,4 +1,8 @@
-data "amazon-ami" "this" {
+locals {
+  time = formatdate("YYYYMMDDHHMM", timestamp())
+}
+
+data "amazon-ami" "ami" {
   region = var.aws_region
   filters = {
     virtualization-type = "hvm"
@@ -10,12 +14,23 @@ data "amazon-ami" "this" {
   most_recent = true
 }
 
-source "amazon-ebs" "this" {
+source "amazon-ebs" "server" {
   region                      = var.aws_region
-  source_ami                  = data.amazon-ami.rhel_10.id
+  source_ami                  = data.amazon-ami.ami.id
   instance_type               = "t2.large"
   ssh_username                = "ec2-user"
-  ami_name                    = "multi_rhel_10_instana_base_${local.time}"
+  ami_name                    = "nomad-server-${local.time}"
+  subnet_id                   = var.subnet_id
+  vpc_id                      = var.vpc_id
+  associate_public_ip_address = var.associate_public_ip_address
+}
+
+source "amazon-ebs" "client" {
+  region                      = var.aws_region
+  source_ami                  = data.amazon-ami.ami.id
+  instance_type               = "t2.large"
+  ssh_username                = "ec2-user"
+  ami_name                    = "nomad-client-${local.time}"
   subnet_id                   = var.subnet_id
   vpc_id                      = var.vpc_id
   associate_public_ip_address = var.associate_public_ip_address

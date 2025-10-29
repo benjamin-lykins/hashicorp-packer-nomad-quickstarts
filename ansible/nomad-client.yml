@@ -3,6 +3,10 @@
   hosts: all
   become: true
   vars:
+    # Template Variables
+    nomad_templates_dir: "templates/nomad"
+    vault_templates_dir: "templates/vault"
+
     # Nomad Binary Variables
     ## Specify the Nomad version to install
     nomad_version: "1.10.5"

@@ -3,6 +3,10 @@
   hosts: all
   become: true
   vars:
+    # Template Variables
+    nomad_templates_dir: "templates/nomad"
+    vault_templates_dir: "templates/vault"
+
     # Nomad Binary Variables
     ## Specify the Nomad version to install
     nomad_version: "1.10.5"
@@ -94,8 +98,6 @@
         - "{{ nomad_license_dir }}"
         - "{{ nomad_log_dir }}"
         - "{{ nomad_audit_log_dir }}"
-        - "{{ nomad_plugin_dir }}"
-
 
     # Check if Nomad is already installed
     - name: Check if Nomad is already installed
@@ -161,13 +163,13 @@
         group: "{{ nomad_group }}"
         mode: '0640'
       loop:
-        - templates/agent/acl.hcl.j2
-        - templates/agent/agent.hcl.j2
-        - templates/agent/audit.hcl.j2
-        - templates/agent/autopilot.hcl.j2
-        - templates/agent/server.hcl.j2
-        - templates/agent/telemetry.hcl.j2
-        - templates/agent/tls.hcl.j2
+        - "{{ nomad_templates_dir }}/agent/acl.hcl.j2"
+        - "{{ nomad_templates_dir }}/agent/agent.hcl.j2"
+        - "{{ nomad_templates_dir }}/agent/audit.hcl.j2"
+        - "{{ nomad_templates_dir }}/agent/autopilot.hcl.j2"
+        - "{{ nomad_templates_dir }}/agent/server.hcl.j2"
+        - "{{ nomad_templates_dir }}/agent/telemetry.hcl.j2"
+        - "{{ nomad_templates_dir }}/agent/tls.hcl.j2"
 
     # Nomad License File (Enterprise Only)
     ## Note: This is required for Nomad Enterprise installations
@@ -183,7 +185,7 @@
     # Create Nomad Service File
     - name: Create Nomad service file
       template:
-        src: "templates/service/nomad.service.j2"
+        src: "{{ nomad_templates_dir }}/service/nomad.service.j2"
         dest: "/etc/systemd/system/nomad.service"
 
     
