@@ -1,6 +1,6 @@
-# Spooky Project Incoming
+# HashiCorp Nomad Packer Quickstarts
 
-_Just to note: repository name is temporary and will to change._
+_Just to note: this registry is heavily a work in progress._
 
 This repository contains quickstart Packer templates and Ansible playbooks to build HashiCorp Nomad images for various cloud providers. 
 
@@ -35,6 +35,9 @@ Using a shared set of Ansible playbooks to configure the Nomad agents after Pack
 - Staged if using Vault for secrets management and TLS certificates
 
 ## Spooky Ascii Art
+- Temporary Spooky Ascii Art to liven up the README. 
+
+
 ```
 
                                Jgy__                        
