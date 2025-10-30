@@ -2,23 +2,11 @@ locals {
   time = formatdate("YYYYMMDDHHmmss", timestamp())
 }
 
-data "amazon-ami" "ami" {
-  region = var.aws_region
-  filters = {
-    virtualization-type = "hvm"
-    name                = "RHEL_HA-10.0.0_HVM-*-x86_64-0-Hourly2-GP3"
-    root-device-type    = "ebs"
-
-  }
-  owners      = ["309956199498"]
-  most_recent = true
-}
-
 source "amazon-ebs" "server" {
   region                      = var.aws_region
-  source_ami                  = data.amazon-ami.ami.id
-  instance_type               = "t2.large"
-  ssh_username                = "ec2-user"
+  source_ami                  = data.amazon-ami.this.id
+  instance_type               = var.instance_type
+  ssh_username                = var.ssh_username
   ami_name                    = "nomad-server-${local.time}"
   subnet_id                   = var.subnet_id
   vpc_id                      = var.vpc_id
@@ -27,9 +15,9 @@ source "amazon-ebs" "server" {
 
 source "amazon-ebs" "client" {
   region                      = var.aws_region
-  source_ami                  = data.amazon-ami.ami.id
-  instance_type               = "t2.large"
-  ssh_username                = "ec2-user"
+  source_ami                  = data.amazon-ami.this.id
+  instance_type               = var.instance_type
+  ssh_username                = var.ssh_username
   ami_name                    = "nomad-client-${local.time}"
   subnet_id                   = var.subnet_id
   vpc_id                      = var.vpc_id

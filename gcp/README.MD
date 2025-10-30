@@ -18,6 +18,8 @@ gcloud config set project YOUR_PROJECT_ID
 gcloud auth application-default login
 ```
 
+_Note: This will only create a token valid for 1 hour._
+
 For additional authentication methods, refer to the [Google Cloud Platform documentation](https://developer.hashicorp.com/packer/integrations/hashicorp/googlecompute#authentication). 
 
 ## Common variables

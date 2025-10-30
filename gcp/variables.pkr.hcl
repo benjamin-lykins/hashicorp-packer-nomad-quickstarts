@@ -20,4 +20,9 @@ variable "ssh_username" {
     description = "The SSH username for connecting to the instances."
     default     = "packer"
     }
-    
+
+variable "image_family" {
+    type        = string
+    description = "The image family to use for the instances."
+    default     = "rhel-10"
+    }
