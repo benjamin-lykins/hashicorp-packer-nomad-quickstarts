@@ -1,19 +1,26 @@
 build {
     sources = ["source.googlecompute.server", "source.googlecompute.client"]
 
+
+    provisioner "shell" {
+        inline = ["echo foo"]
+    }
+
+// why tf these not running
+
     provisioner "ansible" {
-        only = ["source.googlecompute.server"]
+        only = ["googlecompute.server"]
         playbook_file = "../ansible/nomad-server.yml"
-        user          = "ec2-user"
+        user          = "packer"
         extra_arguments = [
             "--extra-vars", "ansible_python_interpreter=/usr/bin/python3"
         ]
     }
 
     provisioner "ansible" {
-        only = ["source.googlecompute.client"]
+        only = ["googlecompute.client"]
         playbook_file = "../ansible/nomad-client.yml"
-        user          = "ec2-user"
+        user          = "packer"
         extra_arguments = [
             "--extra-vars", "ansible_python_interpreter=/usr/bin/python3"
         ]

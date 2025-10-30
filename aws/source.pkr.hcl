@@ -1,5 +1,5 @@
 locals {
-  time = formatdate("YYYYMMDDHHMM", timestamp())
+  time = formatdate("YYYYMMDDHHmmss", timestamp())
 }
 
 data "amazon-ami" "ami" {

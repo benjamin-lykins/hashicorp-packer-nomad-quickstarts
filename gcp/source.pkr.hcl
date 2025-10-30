@@ -1,5 +1,5 @@
 locals {
-  time = formatdate("YYYYMMDDHHMM", timestamp())
+  time = formatdate("YYYYMMDDHHmmss", timestamp())
 }
 
 
@@ -20,6 +20,6 @@ source "googlecompute" "client" {
   source_image = "rhel-10-v20251016"
   machine_type     = "e2-standard-4"
   zone             = "us-east1-b"
-  image_name       = "nomad-server-${local.time}"
+  image_name       = "nomad-client-${local.time}"
   ssh_username = "packer"
 }

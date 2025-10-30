@@ -15,11 +15,8 @@ export AWS_DEFAULT_REGION=Your_Region
 ```
 
 ## Common variables
-You may need to provide region, instance type, source AMI, or other vars. Example:
-- aws_region (e.g. us-east-1)
-- instance_type (e.g. t3.small)
-- ssh_username
-- source_ami
+You may need to provide region, instance type, source AMI, or other vars.
+
 
 ## Validate and build
 From this directory (where the Packer template lives):

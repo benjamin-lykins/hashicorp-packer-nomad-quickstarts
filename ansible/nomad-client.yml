@@ -158,8 +158,8 @@
         remote_src: yes
       when: not vault_stat.stat.exists
 
-    # Create Nomad Server Configuration File
-    - name: Create Nomad server configuration file
+    # Create Nomad Client Configuration File
+    - name: Create Nomad client configuration file
       template:
         src: "{{ item }}"
         dest: "{{ nomad_config_dir }}/{{ item | basename | regex_replace('\\.j2$', '') }}" 
@@ -167,11 +167,11 @@
         group: "{{ nomad_group }}"
         mode: '0640'
       loop:
-        - templates/agent/acl.hcl.j2
-        - templates/agent/agent.hcl.j2
-        - templates/agent/client.hcl.j2
-        - templates/agent/telemetry.hcl.j2
-        - templates/agent/tls.hcl.j2
+        - "{{ nomad_templates_dir }}/agent/acl.hcl.j2"
+        - "{{ nomad_templates_dir }}/agent/agent.hcl.j2"
+        - "{{ nomad_templates_dir }}/agent/client.hcl.j2"
+        - "{{ nomad_templates_dir }}/agent/telemetry.hcl.j2"
+        - "{{ nomad_templates_dir }}/agent/tls.hcl.j2"
 
     # Nomad Client Plugins
     - name: Install podman
@@ -189,7 +189,7 @@
 
     - name: Configure Podman Driver
       template:
-        src: "templates/task_drivers/podman.hcl.j2"
+        src: "{{ nomad_templates_dir }}/task_drivers/podman.hcl.j2"
         dest: "{{ nomad_config_dir }}/podman.hcl"
         owner: "{{ nomad_user }}"
         group: "{{ nomad_group }}"
@@ -199,7 +199,7 @@
     # Create Nomad Service File
     - name: Create Nomad service file
       template:
-        src: "templates/service/nomad.service.j2"
+        src: "{{ nomad_templates_dir }}/service/nomad.service.j2"
         dest: "/etc/systemd/system/nomad.service"
 
     
