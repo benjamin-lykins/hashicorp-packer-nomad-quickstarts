@@ -27,5 +27,5 @@ From this directory (where the Packer template lives):
 ```bash
 packer init .
 packer validate .
-packer build -var-file=vars.pkrvars.hcl template.pkr.hcl
+packer build -var-file=vars.pkrvars.hcl .
 ```
