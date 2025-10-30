@@ -1,25 +1,28 @@
-# AWS — How to build
+# GCP — How to build
 
 ## Prerequisites
-- Reference the main README for general prerequisites: [README.MD](../README.MD)
-- AWS VPC with public subnets and internet access (NAT Gateway or Internet Gateway)
-- AWS IAM User with permissions to create AMIs, EC2 instances, and related resources
+- Reference the main README for general prerequisites: [README.MD](../README.MD)  
+- Google Cloud Project with a VPC, subnets, and internet access (Cloud NAT or public subnet + Internet Gateway)
+- Account with permissions to create images and instances and to write to Cloud Storage 
+- Ensure APIs are enabled: Compute Engine, Cloud Storage, IAM
+- (Optional) Install and configure the gcloud CLI: https://cloud.google.com/sdk/docs/install
+
 
 ## Credentials
-Set AWS credentials in one of these ways:
-- Environment variables:
+The simplest method is to run this locally, authenticated via gcloud:
+
 ```bash
-export AWS_ACCESS_KEY_ID=YOUR_KEY
-export AWS_SECRET_ACCESS_KEY=YOUR_SECRET
-export AWS_DEFAULT_REGION=Your_Region
+gcloud init
+gcloud auth login
+gcloud config set project YOUR_PROJECT_ID
+gcloud auth application-default login
 ```
 
+For additional authentication methods, refer to the [Google Cloud Platform documentation](https://developer.hashicorp.com/packer/integrations/hashicorp/googlecompute#authentication). 
+
 ## Common variables
-You may need to provide region, instance type, source AMI, or other vars. Example:
-- aws_region (e.g. us-east-1)
-- instance_type (e.g. t3.small)
-- ssh_username
-- source_ami
+
+
 
 ## Validate and build
 From this directory (where the Packer template lives):
@@ -27,5 +30,5 @@ From this directory (where the Packer template lives):
 ```bash
 packer init .
 packer validate .
-packer build -var-file=vars.pkrvars.hcl .
+packer build -var-file=vars.pkrvars.hcl . 
 ```
