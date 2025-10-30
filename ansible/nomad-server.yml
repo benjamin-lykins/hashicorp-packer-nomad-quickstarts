@@ -18,6 +18,8 @@
     nomad_install_dir: "/usr/bin"
 
     # Vault Agent Binary Variables
+    ## Provision Vault
+    provision_vault: true
     ## Specify the Vault version to install (optional, useful for TLS certs)
     vault_version: "1.20.4"
     ## This is where the Vault binary will be installed
@@ -136,6 +138,7 @@
       stat:
         path: "/usr/local/bin/vault"
       register: vault_stat
+      when: provision_vault
 
     # Download Vault Binary
     ## Note: This is optional, but useful if you plan to use Vault PKI for TLS certificates
@@ -144,7 +147,7 @@
         url: "https://releases.hashicorp.com/vault/{{ vault_version }}/vault_{{ vault_version }}_linux_amd64.zip"
         dest: "/tmp/vault.zip"
         mode: '0755'
-      when: not vault_stat.stat.exists
+      when: not vault_stat.stat.exists and provision_vault
 
     # Unzip Vault Binary
     - name: Unzip Vault binary
@@ -152,7 +155,7 @@
         src: "/tmp/vault.zip"
         dest: "{{ vault_install_dir }}"
         remote_src: yes
-      when: not vault_stat.stat.exists
+      when: not vault_stat.stat.exists and provision_vault
 
     # Create Nomad Server Configuration File
     - name: Create Nomad server configuration file

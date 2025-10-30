@@ -43,3 +43,11 @@ variable "image_owner" {
   description = "The owner ID of the AMI to use for the instances."
   default     = ["309956199498"]
 }
+
+// Build Variables
+
+variable "provision_vault" {
+  type        = bool
+  description = "Whether to provision Vault on the instance."
+  default     = false
+}
