@@ -9,7 +9,7 @@
 
 
 ## Credentials
-The simplest method is to run this locally, authenticated via gcloud:
+The simplest method to start is to run this locally, authenticated via gcloud:
 
 ```bash
 gcloud init

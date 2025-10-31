@@ -33,12 +33,6 @@ variable "gcp_image_project_id" {
   default     = "rhel-cloud"
 }
 
-variable "image_family" {
-  type        = string
-  description = "The image family to use for the instances."
-  default     = "rhel-10"
-}
-
 variable "cpu_architecture" {
   type        = string
   description = "The CPU architecture for the image."
